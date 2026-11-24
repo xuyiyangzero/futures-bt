@@ -1,17 +1,26 @@
 # fbt — 期货 Tick 回测框架 (第一阶段, 纯 Python, 本地运行)
 
 ## 你的数据 (snap_*.csv / .xlsx / .parquet) 直接可用
-把行情文件放进 `data/` 文件夹, 然后:
+从仓库根目录运行以下命令，使用随项目提供的 FG605 期货样本：
 ```bash
-pip install pandas numpy openpyxl
-cd examples
-python run_demo.py            # 默认读 ../data 下所有 csv/xlsx/parquet; 也可 python run_demo.py 文件或文件夹
+python -m pip install pandas numpy openpyxl
+python examples/run_demo.py data/snap_FG605_2026-03-02_2026-03-02.xlsx
 ```
 - 自动识别 snap 格式 (time / exchange_t / a_p1 / b_v1 / last_p / v ...), 时间转成北京时间, 以 exchange_t 为准。
 - CSV 只读需要的列(45列->28列), 8万行约 0.3 秒。
 - 自动清洗: 买卖盘全空的垃圾行、买一>=卖一、集合竞价快照(08:55-09:00, 20:55-21:00); 丢弃行数记在 summary.csv 的 rows_dropped_in_file。
 - 夜盘自动归属下一交易日(未处理法定节假日), 日盘/夜盘分别独立回测; 一个文件含多合约/多天也会自动切开。
 - 大文件建议先转 parquet: `python tools/convert_to_parquet.py 原目录 新目录` (需 `pip install pyarrow`)。
+
+## 股票快照与逐笔验证
+
+`data/` 同时包含 300750 的盘口快照 CSV 和逐笔事件 Excel。在仓库根目录运行：
+
+```bash
+python tools/validate_stock.py --snapshots data/hq-szl2-300750-1-20261123103814723.csv --trades data/hq-szl2-300750-1-20261123103814723-1.xlsx --out results/stock_validation.csv
+```
+
+脚本核对逐笔与快照区间的笔数、成交量和成交额，再为核对通过的区间输出各价位成交量和分配误差。
 
 ## 成交均价分配与新增参数 (第二版)
 用 `成交额增量/(成交量增量*乘数)` 反推两个 tick 之间的成交均价, 再按均价落在盘口的位置(恰好一档 / 买一卖一之间 / 一二档之间 / 更深 / 超出深度)分配成交价位,

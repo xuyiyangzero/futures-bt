@@ -1,4 +1,7 @@
-/data/
+/data/*
+!/data/hq-szl2-300750-1-20261123103814723-1.xlsx
+!/data/hq-szl2-300750-1-20261123103814723.csv
+!/data/snap_FG605_2026-03-02_2026-03-02.xlsx
 /results/
 /out/
 /examples/out/
