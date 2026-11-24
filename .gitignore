@@ -1,0 +1,14 @@
+/data/
+/results/
+/out/
+/examples/out/
+*.docx
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+.env
+.env.*
+.aws/
+.codex/
+.agents/
